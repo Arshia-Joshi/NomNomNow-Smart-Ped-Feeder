@@ -1,1 +1,1 @@
-# NomNOmNOw-Smart-Ped-Feeder
+# NomNomNow-Smart-Ped-Feeder
