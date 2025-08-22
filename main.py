@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import cv2
 from picamera2 import Picamera2
 
-# Load YOLOv8 model
+# Load YOLOv8 nano model
 model = YOLO("yolov8n.pt")
 
 # Initialize Raspberry Pi Camera
@@ -23,21 +23,22 @@ while True:
         for box in r.boxes:
             cls_id = int(box.cls[0])
             label = model.names[cls_id]
+            conf = float(box.conf[0])
 
-            if label == "dog":
+            if label == "dog" and conf > 0.5:
                 x1, y1, x2, y2 = map(int, box.xyxy[0])  # Bounding box
-                conf = float(box.conf[0])               # Confidence
 
                 # Draw bounding box and label
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                 cv2.putText(frame, f"{label} {conf:.2f}", (x1, y1 - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-    # Save last processed frame (optional)
-    cv2.imwrite("last_frame.jpg", frame)
+    # Show live video feed
+    cv2.imshow("Dog Detector", frame)
 
-    # Exit condition
+    # Exit on pressing 'q'
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 picam2.close()
+cv2.destroyAllWindows()
